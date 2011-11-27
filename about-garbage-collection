@@ -1,0 +1,21 @@
+One of each of the following properties apply to all atoms:
+  Object/Value
+  StrongRef/WeakRef/Value
+  Container/Non-Container
+
+If an atom is a Value, then its type is something like 'Number' or 'Boolean'. They are always transfered by-value. Its size is <= sizeof(void*)
+If it is an object, then it has a count of "strong references" and "weak references".
+All atoms that are an 'object' are a Strong Reference.
+A Weak Reference atom can be created from an object.
+All Container atoms are objects; but there are some objects that are not containers, such as 'String'.
+
+
+Containers are are atoms that can contain other atoms. These are Nodes, Scopes, and Objects.
+
+So, containers make a tree. A top of the tree (there may be several) is a "root". All references are unidirectional Strong References. Weak References are ignored.
+
+The important thing is to keep the container tree acyclic. This is accomplished by a rule: A container can only refer to objects of a lower level than this. If there is a container at a lower attempts to reference an object at a higher level, a weakref is created instead of a strongref.
+
+It is possible for this rule to be broken. It is detectable when this happens; the child of a node pointing upwards will be marked as 'stolen'. The rule will be restored at some later time when the child is eventually loses a reference.
+
+

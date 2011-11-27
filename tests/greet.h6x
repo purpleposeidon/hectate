@@ -1,0 +1,2 @@
+[set greet quote.set-arg.[print "Hello, " .arg "!"]]
+

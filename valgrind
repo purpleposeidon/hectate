@@ -1,0 +1,7 @@
+#!/bin/sh
+
+PROGRAM=./src/shell.out
+#--show-reachable=yes
+
+./build $PROGRAM && rlwrap --no-warnings valgrind --db-attach=yes --db-command="gdb $PROGRAM %p" --tool=memcheck --leak-check=full --num-callers=50 $PROGRAM $@ #Shall I nest another program?
+

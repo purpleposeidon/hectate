@@ -1,0 +1,30 @@
+#!/bin/sh
+
+REDO="redo"
+
+
+which $REDO 2>&1 > /dev/null
+if [ $? -ne 0 ]
+  then
+    echo "This project uses the redo build system:"
+    echo "  git clone https://github.com/apenwarr/redo.git"
+    echo "Install with './redo install' in that directory."
+    exit
+fi
+
+if [ -e /proc/cpuinfo ] 
+  then
+    thread_count=$(cat /proc/cpuinfo | grep '^processor' | wc -l)
+    REDO="$REDO -j $thread_count"
+fi
+
+if [ -n "$1" ]
+  then
+    $REDO $@
+  else
+    $REDO src/all
+fi
+
+
+
+

@@ -1,0 +1,5 @@
+[reference-type atom] -- returns StrongRef, WeakRef, or Value
+[reference-weaken symbol] -- converts to a weakref
+[reference-steal parent child destination] -- weakens parent's reference to child, and puts child in destination
+
+

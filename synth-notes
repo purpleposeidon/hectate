@@ -1,0 +1,43 @@
+[note-handler function]
+
+set:note-handler-function function:<note-object>:{do
+  [set note [note-object note]]
+  [set buffer [note-object buffer]]
+  [set ruler [note-object ruler]]
+
+  [buffer size 1.0] #buffer-size is dependent on the note's frequency
+  [buffer clear]
+
+  #The following would be value-getters:
+  [note pitch]
+  [note velocity]
+  [ruler pitch-bend]
+  [ruler sustain]
+  [ruler mod]
+
+  (while [note-object playing] {do
+    #start with a sin wave
+    [buffer map quote:[sin [* .arg note:pitch]]]
+    
+    #add a saw
+    [buffer map quote:[+ buffer:here buffer:offset]]  #buffer:here == buffer:get:.buffer:offset
+    
+    #Smooth the edges of the buffer
+    [buffer map quote:(if
+      [gt 0.1 buffer:offset-% 0.9] [buffer:here] #main portion not changed
+      [lt 0.1 buffer:offset-%] [* buffer:here [/ buffer:offset-% 0.1]]
+      [gt 0.9 buffer:offset-%] [* buffer:here [/ [+ -:[- buffer:offset-% 0.9] 0.1] 0.1]]
+      buffer:here #Shouldn't happen? 'gt' would prolly allow equal values
+    ]
+    [buffer flush]
+  })
+
+  #Note is now finished; decay
+  (repeat 10 {do
+    [buffer mean] #makes buffer flatten out
+    [buffer flush]
+  })
+}
+
+
+

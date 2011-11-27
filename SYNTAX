@@ -1,0 +1,78 @@
+Here is the (pseudo) EBNF proscribing Hectate's syntax.
+PEBNF syntax:
+    |           is ordered alternation
+    *           matches zero or more times
+    +           matches one or more times
+    *?          matches non-greedily
+    <PEEK foo>  matches foo without consumming
+    [foo]       match foo zero or once
+Each rule is annotated with the return type (or result) of the relevant code.
+The parser is hand-written. The function coresponding to the 'atom' rule is mostly
+a huge mess with all of the referred rules in-line.
+
+
+  #===Parse start===
+  parse-file ≔  ('\n' | node | atom-list)*
+    --> Node*
+  parse-node ≔ atom-list
+    --> Node*
+    #used by the REPL
+  parse-atom ≔ atom-cluster
+    --> Atom
+    #Used for converting strings to other types
+
+  #===Basic structure===
+  atom-list ≔ ' '* (atom-cluster ' '*)*
+    --> Node*
+  atom-cluster ≔ atom ( (':'+ | <PEEK '.'>) atom)*
+    --> Atom
+    #An Atom containing a node; each 'atom' item is added to the result
+  atom ≔ node | number | boolean | STRING | format_string | symbol
+    --> Atom
+  node ≔ '[' atom-list ']' | '.' atom-cluster
+    --> Node*
+  
+  #===Atoms===
+  #All "constant values" are actually all checked at the same time
+  boolean ≔ "true" | "false"
+    --> Atom
+  
+  number ≔ ['+'|'-'] ("inf" | "nan" | FLOAT)
+    --> Atom
+    #FLOAT is gotten using a string-to-float function.
+
+  format-string ≔ '`' [atom [':']] format-string-2
+    --> Node*
+  #The two below are in the same function
+  format-string-2 ≔ OPEN_QUOTE ('\' CHAR | '`' atom | .)*? CLOSE_QUOTE
+    --> Node*
+  string ≔ OPEN_QUOTE ('\' CHAR | .)*? CLOSE_QUOTE
+    --> Atom
+
+  #If it doesn't match anything else, it is assumed to be a symbol or a path_symbol.
+  symbol ≔ symbol-1 | path_symbol
+    --> Symbol or Node*
+  symbol-1 ≔ ALPHASYMBOL (ALPHASYMBOL | NUMERIC)*
+    --> Atom
+  path_symbol ≔ '/'* (symbol-1 '/'*)*
+    --> Node*
+    #If the path_symbol starts with a /, the node result's first argument will be %SCOPE-ROOT
+
+
+
+
+Some example parses of the syntax sugar:
+  foo bar bang --> [foo bar bang]
+  [foo bar bang] --> [foo bar bang]
+  [foo] [bar bang] --> [[foo] [bar bang]]
+  [foo bar] baz --> [[foo bar] baz]
+  [foo bar:bang] → [foo [bar bang]]
+  [foo .bar:bang] → [foo [bar bang]]
+  .foo:bar --> [foo bar]
+  foo:bar --> [foo bar]
+  foo:bar::bang:baz:: --> [foo bar bang baz]
+  ::foo:: --> [foo]
+  a.b.c.d → [a [b [c [d]]]]
+  a.b.c:d → [a [b [c d]]]
+
+

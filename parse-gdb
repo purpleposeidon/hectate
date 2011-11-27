@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#No rlwrap. :(
+
+PROGRAM=src/parser.out
+
+./build $PROGRAM && gdb --args $PROGRAM $@
+

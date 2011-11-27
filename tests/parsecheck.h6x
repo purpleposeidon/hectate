@@ -1,0 +1,5 @@
+
+[print "This is one line.\n"]
+[print "This is two line.\n"]
+include math
+print "A sum is " [+ 2 3]

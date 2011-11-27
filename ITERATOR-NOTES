@@ -1,0 +1,102 @@
+*********************************************************************
+Okay. This is how iterators will behave. Totally. Absolutely.
+  When an iterator is created (or reset), it is at the BEGINING.
+  [it seek 0] must return BREAK.
+  Any negative seeks will not change the position.
+  [it side] returns FRONT
+
+  Do [it seek 1] on a fresh iterator to return the first value.
+  [it side] still returns FRONT.
+
+  We are now in the BODY of the iterator. [it side] will return BODY.
+  [it seek 1] will advance through it.
+
+  If the iterator is finite, we will eventually reach the very last item.
+  [it side] will return LAST.
+  Any positive seeks will not change the position.
+  [it seek 1] will return BREAK.
+
+  The above notes about [it side] do not apply if the iterator has 1 or 0 items.
+  Instead, SINGLE or EMPTY must be returned always.
+
+An iterator ABSOLUTELY MUST implement this behavior:
+  [it seek 1] will iterate over all the items
+  (This is the only feature required by Hectate builtin functions.)
+
+An iterator SHOULD TOTLALY implement this behavior:
+  [it seek 0] will return the current location
+  [it reset] will return the iterator to the original state
+  [it clone] will return a copy of the iterator, at the same state (if supported by the underlying datatype. If you require clones of arbitrary iterators to return the same items, use a buffer iterator and clone that instead.)
+  [it side]. If the underlying source is limitations and doesn't really support this, the iterator itself should keep track of it. The iterator should also be mindful of possible singleton or empty inputs. If an iterator is of unknown length, it should return FRONT until the first item has been consumed, and BODY after that. If the iterator is infinite in either direction, it should return BODY always.
+    I don't have anything depending on [it side] at this time. The most likely use case is something like:
+      (for it 
+        (if (it is-front) ...)
+        (if (it is-body) ...)
+        (if (it is-last) ...))
+*********************************************************************
+
+
+Release reqs:
+  fibonnaci works w/o bugs (no segfaults, no memory leaks/problems)
+  have many basic functions?
+
+
+
+Also it'd be nice to have iteration be actually sensible for once.
+
+
+
+
+***
+When an iterator has succeeded in returning a result, it shall save it (if necessary). Thus, [iter seek 0] will always succeed. (Unless the iterator has no items.)
+When the iterator has gone over bounds, it will return BREAK. Calls to [iter seek 0] will return the value contained prior to the seek out-of-bounds. If iterating over a list, such as <1 2 3>:
+  [it seek 0] --> RESULT 1
+  [it seek 100] --> BREAK, as we don't have that many items.
+  [it seek 0] --> RESULT 1. We don't move to the end.
+
+
+
+Again, iterating over <1 2 3>
+  [it seek 0] --> 1 (index = 0)
+  [it seek 1] --> 1 (index = 1)
+  [it seek 0] --> 2 (index = 1)
+  [it seek 1] --> 2 (index = 2)
+  [it seek 1] --> 3 (index = END)
+
+Over <1 2 3>
+  [it seek 1] --> 1 (index = 1)
+  [it seek 1] --> 2 (index = 2)
+  [it seek 1] --> 3 (index = END)
+
+Over <1 2 3>
+  [it side] --> FIRST (index = 0)
+  [it seek 0] --> 1  (index = 0)
+  [it seek 1] --> 1 (index = 1)
+  [it seek 1] --> 2 (index = 2)
+  [it seek 1] --> 3 (index = END)
+
+
+
+
+
+
+=============================================
+Iteration Object stores:
+  Index here = 0;
+  Index next;
+
+Iteration Seek Algorithm:
+  if offset == 0:
+    If we have items:
+      return here
+    else:
+      BREAK
+  else we should have next:
+    if next is outside range:
+      BREAK
+    set here to next
+  
+  next = here + offset
+  return the item at 'here'.
+  
+

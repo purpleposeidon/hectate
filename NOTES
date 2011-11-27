@@ -1,0 +1,26 @@
+
+
+(set to-replace .quote:[some big [long node [with sub-nodes [and REPLACE-TOKEN]]]])
+[node-template to-replace REPLACE-TOKEN:[print "replacement value"]]
+
+
+[/node/template to-replace [RT RV]]
+
+
+'objects' are just 'scopes'.
+
+%CALL
+
+
+void eval_object(Context &context, Atom function, Node args) {
+  Object o = function.getObject()
+  try {
+    context.eval(o.get(Word::ObjectCall))
+  }
+  catch (HectatError &e) {
+    throw;
+  }
+}
+
+
+

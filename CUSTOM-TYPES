@@ -1,0 +1,48 @@
+
+//TODO: Needs a better name
+class AbstractType {
+public:
+  virtual ~AbstractType() = 0;
+  virtual String toString() = 0;
+  virtual void eval(Context &context) = 0;
+};
+
+class AbstractContainerType : public AbstractType public Container {
+  //use this type if you will be storing atoms
+};
+
+
+class Iterator : public AbstractType {
+public:
+  
+};
+
+
+Okay, so uhh
+
+Hot damn. This is going to fuck up ALL the functions, seriously!
+
+We really need like... an evaluation namespace or something?
+
+
+
+Context &context;
+Iterator &it = context.getArg();
+
+void Context::call(Atom function, Iterator args) {
+  call_stack.push_pair(std::pair(function, args));
+  switch (function.type) {
+    ...
+    case NODE:
+      eval_node(function, args);
+      break;
+    ...
+  }
+  finally {
+    call_stack.pop();
+  }
+}
+
+sum:
+  Number n = 0.0;
+  

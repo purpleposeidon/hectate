@@ -1,0 +1,4 @@
+#!/bin/sh
+
+./build src/shell.out && rlwrap --no-warnings ./src/shell.out $@
+

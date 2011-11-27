@@ -1,0 +1,20 @@
+Tests to write/run
+------------------
+
+
+empty input
+'.'* a bunch of times, does it crash?
+input = /dev/urandom
+every function with no argument
+every function with different types
+"tostring" == tostring
+
+
+
+
+
+
+
+and run all tests under valgrind
+
+

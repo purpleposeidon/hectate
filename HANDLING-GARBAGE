@@ -1,0 +1,30 @@
+Okay, all atoms go into containers. A few atoms will go into a Context, or just be floating in the program somewhere. These would be %ROOT and whatever our program's first scope is. (%TOP-SCOPE? *shrug*)
+
+All containers will have a bit, 'is_nested' or somesuch. When a container is assigned to another container, this bit is checked. If it is false, then the actual container is set, and the bit is set true. If it is true, then a weakref is used instead.
+
+
+We might want to do some inheritance?
+
+
+class HectateContainer {
+private:
+  is_nested = false;
+};
+
+class Node : public HectateContainer {};
+class Scope : public HectateContainer {};
+
+
+Weakrefs should be completely transparent.
+We'll also want a function that can exchange a weakref for a hard ref.
+
+{do
+  [set a .scope-new]
+  [set b .scope-new]
+  [a set c:.scope-new]
+  [b set c:a/c]
+  [reference-trade a/c b/c] #partially evaluate both arguments?
+}
+
+
+

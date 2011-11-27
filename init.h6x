@@ -1,0 +1,10 @@
+
+#This is the initialization file.
+
+[include math flow]
+
+[print "This is Hectate!\n"]
+[set help quote:[print "Yeah, right."]]
+
+
+

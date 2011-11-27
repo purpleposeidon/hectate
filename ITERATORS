@@ -1,0 +1,64 @@
+An iterator is a particular AbstractType that implements a (C++) iterator interface.
+
+The following hectate types will be able to create iterator interfaces:
+  Node
+  Scope
+  string
+  
+
+hectate iterator functions:
+  [iter] [iter next] -- return next item (advance & ret), or break
+  [iter back] -- return prev item (recede & ret), or break
+  [iter value]* -- Get the iter object's value
+  [iter key]* -- get the iter object's key
+  [iter source]* -- get the iter's object
+  [iter seek N]* -- skip to Nth item
+LATER TODO  [iter peek N] -- return Nth item
+LATER TODO  [iter poke N] -- returns true if we can look that far
+LATER TODO  [iter jump N] [iter jump-front] [iter jump-back] -- goto the Nth item from the begining (Can have -N, like python)
+LATER TODO  [iter delete] -- delete iter's selected item
+LATER TODO  [iter replace] -- change the value associated with the key
+LATER TODO  [iter insert] -- goes before the current selection (so [iter] won't return what was just inserted)
+LATER TODO  [iter is-first] [iter is-last]
+LATER TODO  [iter clone] -- make a copy of the iterator
+DEL LATER TODO  [iter map map-func] [iter filter predicate] [iter reduce acc reduce-func]
+DEL LATER TODO  [iter ability] -- return a list of what the iterator can do
+
+'iteration loop':
+  (over item-name [get-iter] {do block})
+
+
+DEL Abilities:
+DEL   iter/cap/reverse
+DEL   -  iter/cap/random
+DEL   iter/cap/modify-end
+DEL   -  iter/cap/modify
+DEL   -  iter/cap/modify-safe
+DEL   iter/cap/ends
+DEL   iter/cap/keyed
+
+Any container that can create an iterator will have an 'iterator mark'. If there are any major changes to the container, the mark is
+incremented. If the mark doesn't match the iter instance's mark, it will be made invalid. (If the change is made via the iterator, all is well for that particular iterator.)
+
+
+typedef unsigned int MarkType;
+
+class Iterable {
+  public;
+    Iter *getIter();
+  protected:
+    MarkType iter_mark;
+};
+
+Iter needs to implement: seek, key, value, source, delete, replace, insert, length, is_first, is_last
+
+class Iter : public AbstractType {
+  public;
+    virtual Atom value();
+    virtual Atom key();
+    virtual Atom source();
+
+  private:
+    MarkType iter_mark;
+};
+

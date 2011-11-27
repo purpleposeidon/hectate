@@ -1,0 +1,5 @@
+#!/bin/sh
+
+./build src/parser.out && \
+echo "This program prints out what the parser sees." ; echo ; rlwrap --no-warnings ./src/parser.out
+

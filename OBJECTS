@@ -1,0 +1,50 @@
+Objects are just going to be scopes with a special evaluator.
+DEL  (Hey, have their actual type be scope with %OBJECT defined? :O)
+
+Object functions:
+  %CALL -- called on evaluation, with any arguments passed to it
+    [objInstance arg1 arg2] --> [[object-get objInstance %CALL] arg1 arg2]
+  %TO-STRING -- Returns a string representation
+DEL  %CONVERT-TO -- used to convert to other types
+DEL    [convert objInstance destType]
+DEL  %CONVERT-FROM -- used to convert from other types. Uhm. This'd have to be called with a class.
+DEL    [convert srcType objInstance]
+  %DELETE -- called when there are no more references to the object
+  %INIT -- Called when using this object as a class to create instances. It'd do initialization.
+    [[object-get classObject %INIT] .object #* that has %PARENT assigned to the class *# ]
+  %CLASS -- Parent object
+  %NAME -- Name it with a string
+
+Of course it'd have the other Scope %VARIABLES as well.
+
+
+
+Global functions:
+  [object/new] -- creates a new, blank object
+  [object/new classObject (parameter list)]
+  [object/get OBJECT ITEM] -- get value from object's scope
+  [object/set OBJECT ITEM VAL] -- sets item with object's scope
+DEL  [object/get-scope OBJECT] -- returns the scope of an object
+DEL  [object/from-scope] -- converts a scope to an object (XXX: Just use [convert]?)
+
+
+
+Classes
+  one first makes 'class object'. It's a class object if it defines an %INIT function.
+  When [object classObject params] is called:
+    1) A new object is created
+    2) The object has %PARENT set to the classObject.
+    3) classObject's %INIT is called, with the object, and any additional parameters.
+    4) The object is returned
+
+
+{do
+  [set personClass .object]
+  [set personClass/%INIT quote:.arg-net:{do
+    [set this .arg]
+    [set this/name ""]
+    [set this/age 0]
+  }]
+}
+
+

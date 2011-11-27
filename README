@@ -1,0 +1,9 @@
+
+Compilation requires:
+  1. A recent version of g++ that supports c++0x (I'm using 4.5.2)
+  2. redo, available at https://github.com/apenwarr/redo
+      (./build for hints)
+
+
+Start with 'BRIEF-TUTORIAL'.
+

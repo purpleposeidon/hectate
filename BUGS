@@ -1,0 +1,110 @@
+VALGRIND
+--------
+
+
+
+EVALUATION
+----------
+####[`" foo bar!  `[+ 2 3 4 ] " ] -- pretty sure this isn't a thing?
+✶⊃─┤ set %SCOPE-SELF/x 4
+
+set a ./object/new
+object/set a foo 23
+object/set a %TO-STRING quote:[`"awesome object with foo = `[get a foo]"]
+a
+*segfaults*
+
+{do [set a ./object/new] [object/set a foo 23] [object/set a %TO-STRING quote:[`"awesome object with foo = `[object/get a foo]"]]}
+
+
+PROFILING
+---------
+Do it! gprof or something.
+Compare to other languages?
+
+
+BUILTIN FUNCTIONS
+-----------------
+Implement them all. All of them.
+
+
+SYNTAX & PARSING
+----------------
+The pretty parse for [a b].[c d].[e f]
+.....a/b
+(Add actual grave markers to grave; unicode 6.0?)
+(And consider unicode 6.0 in general.)
+write syntax test suite program
+Have foo.bar.bang pretty-print properly (how about foo:.[bar:baz] ?)
+Unicode simile crap, like math/Σ and diacritics and combining chars and that sort of awful thing
+Make bracket elision less fail.
+set f quote.set-arg:[print 'it is ' .arg]  <-- pretty prints wrong
+garbage? like control chars
+foo.bar.{do} pretty prints wrong (and maybe will parse wrong in the future?)
+Allow this `"`.format" corner case
+And also `"`.format!"
+
+
+TODO
+----
+grep TODO XXX FIXME NOTE (individually)
+Exception inheritance tree
+Also, proper hectate errors. abort-worthy errors, hectate argument errors, a place for the the internal function name to go
+Objects, using scopes (in progress)
+ack cluster Parser
+safety/security guarantees:
+ - crash properly
+ - keep track of memory: use a custom memory allocator that gets memory from a Context-specific memory pool
+cleanup the humungous #include mess
+implemented functions described in a file in the old version (also, copy that file in here)
+Make a nice Hectate:: namespace
+A 'path' type, instead of using nodes.
+in-hectate debugger
+^C should be nice, maybe go to debugger (Or use a different signal for the debugger?)
+
+
+IDEAS FOR CONSIDERATION
+-----------------------
+Lines count as parens
+[chroot ENVIRONEMT-SCOPE CODE] -- Change %ROOT to ENVIRONMENT-SCOPE, and call [/shell CODE]. The environments could have stuff like static type checking, compilation. An environment would define different low-level routines. "Execution mode"?
+Add to Node (or something else?) 'String source'; 'unsigned short creation_proxies'. If a node is created by the parser, put 'source' to the file. Else I myself am a Node, and copy my values and increment his creation_proxies
+[quote-hard what] -- evaluating returns again [quote-hard what], use unquote to get contents
+
+
+OTHER
+-----
+
+
+RELEASE REQS
+------------
+Executing files
+Iterators making sense
+
+
+♥SQUASHED♥ ✶✶\(^__^)/✶✶
+=======================
+builtin-backtrace
+[print .1]
+set x .%SCOPE-SELF
+Parsing the top-level's kinda off
+The ':' in `string-join:"hello `bob" might not work anymore.
+print ”this string's deliminators are backwards!“
+internationalized string deliminators
+update node repr
+arg-net 2
+The empty line
+Change weakref. weakref points to the same memory as the real ref. remove weakref pointer, replace with "weakref_count" When strong refcount+weak refcount ≤ 0, delete the mem
+{do [set x .%SCOPE-SELF] [set x 1] [dir]}
+set x .%SCOPE-SELF
+.arg-net:{do [set x %SCOPE-SELF] [dir]}
+Consider: foo.bar == foo:.bar
+a.b.c.d.e.f
+{do [set a 'test'] [a at 2 replace 'x'] [a]} 
+redo for genwords.py
+rename 'arg-net' to 'set-arg'
+Rename ArgSetResult to SetArgResult
+{do [set f quote.arg-net.[print `"Hello, `[arg]!"]] [f] [f]}
+{do [set f quote.set-arg.[set A arg]] [f 1 2 3]}
+The following programs, without crashes or memory errors: hello world, hello $foo, fibbonaci
+
+

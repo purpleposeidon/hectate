@@ -1,0 +1,65 @@
+set read-eval-print .quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `.input"]}
+
+set REP quote.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `.input"]}
+
+
+set a .quote:{do [set input .read-node] [print `"You entered `input.\nEval result: `.input"]}
+set rep .quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `[input]"]}
+
+
+
+[[`"`.t"]]
+
+========================================================================================================================
+$ ./run 
+cd Hectate/; make -j 2
+make[1]: Entering directory `/home/poseidon/Development/hectate/Hectate'                                     
+make[1]: Nothing to be done for `all'.                                                                       
+make[1]: Leaving directory `/home/poseidon/Development/hectate/Hectate'                                      
+g++ -ansi -Wall -g -I. -rdynamic -o shell.out Shell.o Hectate/*.o                                            
+g++ -ansi -Wall -g -I. -rdynamic -o parser.out TestParser.o Hectate/*.o
+g++ -ansi -Wall -g -I. -rdynamic -o fiber.out FiberTest.o Hectate/*.o
+g++ -ansi -Wall -g -I. -rdynamic -o check.out Tests.o Hectate/*.o
+
+✶⊃─┤ .t'a'
+Parse failed: line 0 col 2: Expected cluster-joiner between cluster components
+.t'a'
+  ^
+✶⊃─┤ .t:'a'
+
+✶⊃─┤ print .t:'a'
+
+✶⊃─┤ print [quote .t:'a']
+.t:'a'
+✶⊃─┤ set read-eval-print .quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `.input"]}
+Parse failed: line 0 col 113: Expected cluster-joiner between cluster components
+ `input.\nEval result: `.input"]}
+                              ^
+✶⊃─┤ set read-eval-print .quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `[input]"]}
+rlwrap: warning: target killed by SIGSEGV.
+
+Segmentation fault
+========================================================================================================================
+
+
+
+.quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `[input]"]}
+
+.fasdf:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `[input]"]}
+
+
+.fasdf:`"foo"
+
+set read-eval-print .quote:.arg-net:{do [set input .read-node] [print `"You entered `input.\nEval result: `.input"]}
+.arg-net:{do [print `"You entered `input.\nEval result: `.input"]}
+
+.arg-net:.do:[print `"You entered `input.\nEval result: `.input"]
+
+.arg-net:.do:[print `"`.i"]
+
+
+
+
+set r .quote:.arg-net:[print "Test.\n"]
+[r]
+[r]

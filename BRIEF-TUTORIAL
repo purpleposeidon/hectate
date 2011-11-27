@@ -1,0 +1,50 @@
+At the incredibly fancy ✶⊃─┤ prompt, type 'ls' and then input a newline character.
+It'll print out a bunch of crap: The local scope and the global scope.
+
+Scopes use a filesystem metaphor. You've got %SCOPE-SELF and %SCOPE-PARENT for './' and '../' irrespectively. %SCOPE-ROOT is '/'.
+
+You can get a listing of the contents of other scopes by just putting in their names. It'll return that scope, which gets formatted as a contents listing.
+
+So,
+✶⊃─┤ math
+shows the contents of the math scope. (You can also do "/math", and "math/", and "/math/".)
+
+So to get our addition most hardcore going, we do 
+✶⊃─┤ /math/+ 2 3 4
+→ Number 9
+
+
+Actually, you should pretend that cwd is the local scope. You should pretend that / is in your $PATH.
+You can add/remove/show your path using the functions '[include]', '[exclude]', and '[include-show]'.
+
+✶⊃─┤ include math flow
+will save typing.
+
+We can save our results by
+✶⊃─┤ set our-very-first-special-variable-that-is-extra-long [div 2 3 4]
+
+Hectate is actually lispish; but at the top-level of the file (or stdin), the brackets can be elided.
+✶⊃─┤ [+ 2 3 4]
+→ Number 9
+
+Bracket type does not matter, but they must match. "Bracket" means parens/braces/matching-angle-brackets/etc.
+[] is used by default; {} is used for lists of commands, similiar to C; () is used for flow control; <> is used for not-evaluated data. Nigh every other brackety in Unicode can be used as well.
+
+Unicode's all over the place. Get used to it.
+
+The totally official file extension for hectate code is .✶ (Or .hex if you're lame.)
+
+Two forms of comments:
+  #Comment to the end of the line
+  #* inline comment *#
+
+You can use the 'parse' script to get a look at what the parser sees.
+
+**********************************************************************
+*Most of the documents in this directory are full of lies and deceit!*
+*(Except for SYNTAX, mostly.)   Use the source, Luke!                *
+**********************************************************************
+
+BUGS is the issue-tracker.
+
+

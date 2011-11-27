@@ -1,0 +1,11 @@
+
+
+#Compilation configuration. (This is in sh)
+
+GCC_CMD="g++ -std=c++0x -Wall -rdynamic"
+LIBS="-ldl" #-lefence
+FLAGS="-g -D_GLIBCXX_DEBUG" #-O0
+DEPS="-MMD -MF " ##Follow $DEPS with dependency output file
+
+GCC="$GCC_CMD $FLAGS"
+

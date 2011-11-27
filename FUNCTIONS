@@ -1,0 +1,365 @@
+List of basic hectate functions.
+
+BASIC
+  [quote]
+  {do}
+  [return]
+  [scope]
+  [arg] -- no arg-net, use scope. We'll have an %ARGUMENT-INDEX
+  [set], [set-up]
+    [set token-or-expression] -- set to none
+    [set token-or-expression value]
+  [type-of]
+  [type-convert]
+  (if)
+    (if condition:block)
+    (if condition:block else)
+    (if condition:block condition2:block2)
+    (if condition:block condition2:block2 else)
+  (while)
+    (while condition)
+    (while condition block)
+  (forever)
+    (forever block) -- until it breaks, anyways
+  (try)
+    (try block)
+    (try block catch )
+    (try block catch finally)
+  [break]
+  [error]
+  [string:join]
+
+
+FANCY PRIMATIVES
+  [tail-recurse] -- throw a TAIL_RECURSION action up to {do}.
+
+  [context-create] -- Creates a new FiberManager and Context.
+  [context-object] -- Runs a step
+  [context-object:root] -- get/set root
+  [context-object:stack] -- get/set stack
+
+
+
+
+MATH
+  [+], [-], [*], [sum], [sub], [mul], [div], [power]
+    Basic arithmatic.
+      [+ 2 3] --> 5
+  [++], [--], [**], [sum-inplace], [sub-inplace], [mul-inplace], [div-inplace], [power-inplace]
+    Inplace arithmatic.
+      [set x 1]
+      [++ x] --> 2
+      [** x 3] --> 6
+  [sin], [cos], [tan]
+    Trig functions
+  [<], [<=], [≤], [=], [>], [>=], [≥]
+    Returns true if all items are sorted in the given order
+  [∀], [∃], [∃₁]
+  [¬]
+
+
+
+
+OBJECT
+  [object-new] -- A scope, but evaluated specially.
+  [object-merge] -- Combine two objects; raises an error if there's a conflict
+  [object-spawn] -- Creates an instance of that object; the scope gets it's %ROOT set to this object.
+  [object-get] -- scope get
+  [object-set]
+  [object-parent] -- Get the spawner
+  [object-parent-get]
+  [object-parent-set]
+  [object-run] -- Runs a node with the object's scope
+  overloads: %CALL, %CONVERT, %GET
+
+
+
+ADT: COLLECTION, DICTIONARY
+  [ADT-new] -- Give a list of desired methods/properties (or a string name), and an optional compare function, and an optional type (or a list of two types for DICTIONARY's)
+  [ADT-object:methods] -- Lists available methods
+  [ADT-object:clear]
+  [ADT-object:size]
+  [ADT-object:type] -- type of the ADT
+  [ADT-object:%METHOD]
+      ANY-ADT: get, set, remove, map, has
+      PROPERTIES: ordered, mixed-type
+      COLLECTION: swap, front, front-push, front-pop, back, back-push, back-pop
+      DICTIONARY: get-back, set-back, map-back
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This file lists all functions, and which modules they'd be put into.
+Functions prefixed with ✓ are actually written.
+
+
+BLOCKS
+  scope statement
+    create a new scope, and return the evaluation of statement
+  do statement1 statement2 ...
+    run each statement sequentially, until 'return' or there are no more statements
+  return value
+    jumps out of execution to the top-most 'do', and 'do' returns 'value'.
+
+
+FLOW CONTROL
+  if :condition:expression :else-if-condition:elseif-expression (:else-if-condition-N:elseif-expression-N) (else-expression)
+  (if
+    [== 3 4]:{do
+      [print '3 is 4. What?' NL]
+      [error "math broken"]
+    }
+    [> 5 6]:[error "math still broken"]
+    {do
+      [print "I was afraid math had broken..." NL]
+      [print "Luckily, 2 + 2 is still equal to " [+ 2 2] NL]
+      [print "(Unfortunately, + 2 2 remains as " [2 + 2] ")" NL]
+    }
+  )
+  repeat count statement
+    evaluate 'count'. Evaluate 'statement' 'count' times
+  while condition [statement]
+    [set i 10]
+    while:i:{do
+      [print i]
+      [-- i] /* [set i [- i 1]] */
+    }
+  continue
+    jump to the end of the loop, re-testing the expression.
+    Consider having a variant of continue that doesn't re-evaluate the expression? [again]
+  break [return-value]
+    jump out of the loop, the loop evaluates to return-value
+  switch-with
+    (switch-with function VALUE
+      { #* Cases *#
+        <label ITEM>
+        <label ITEM>
+      }
+      [default]
+    )
+    An unusual function. Evaluates VALUE. Then for each component in CASES, it evaluates [function VALUE first-arg-of-CASES]. If it is true, then it returns ITEM. Otherwise, it returns default, if given. Otherwise, it returns NONE.
+    Example:
+      .set:ordinal:(switch-with == entry-number {
+          <1 'first'>
+          <2 'second'>
+          <3 'third'>
+        }
+        [cat entry-number 'th']
+      )
+
+MULTI-TASKING
+  parallel code+
+    execute a step of arg1, then a step of arg2, ...
+    If an argument ends evaluationg with STOP, then the value given to STOP is RETURN'd
+    If all arguments have been evaluated, then RETURN nothing.
+  with condition code [steps-per-condition-check]
+    while 'condition' evalutes to true, execute a step of 'code'.
+    {do
+      [set end (+ 1 (current-time))]
+      [set count 0]
+      [with [larger end (current-time)] (while 1 {++ count})]
+      print:count:" steps in 1 second."
+    }
+    could also use return value of :condition to determine how many steps to execute.
+  stop [return-value]
+  some count code
+    Execute count evaluation steps of code.
+
+
+VARIABLES
+  set variable value
+    evaluate 'value' and assign it to the variable. The variable is set in the local scope.
+  up-set variable value
+    Search through scopes (not including the lowest scope) for variable. If found, set its value. Else raise error.
+  arg
+    pop an argument. This function get arguments from [catch-args]'s parent
+  catch-args body
+    (or maybe name take-arg, arged ?, arg-net)
+    A shell function. When [arg] is eval'd, the function looks up the node tree until it finds an arg-net. Then it goes up one previous, and starts taking the args from there.
+  default varname value
+    [if .NOT:(is-defined varname) {set varname value} ]
+    arg-sep:[if not:(defined arg) [set varname [arg]]]
+
+
+MATH
+  + arguments+
+  - arguments+
+  * arguments+
+  / arguments+
+  % arguments+
+  ^ arguments+    (exponentiation)
+  sign argument
+  abs argument
+  round argument
+  min
+  max
+  clip-number Num Lower-Bound Upper-Bound
+    [max .min:Num:Lower-Bound Upper-Bound]
+  floor
+  ceil
+  <trig crap>
+  neg x
+    -x
+  recip x
+    1/x
+  
+  IN-PLACE:
+    ++ variable [value]
+      in-place addition
+      [set variable [+ variable [default value 1]]]
+      The 'value' argument of each in-place math function defaults to 1.
+    -- variable [value]
+      in-place subtraction
+    ** variable [value]
+      in-place multiplication
+    // variable [value]
+      in-place division
+    %% variable [value]
+      in-place modulus
+    ^^ variable [value]
+      in-place exponentiation
+    !! variable
+      [set variable [not variable]]
+
+LOGIC
+  not argument
+  ¬ argument
+  and arguments+
+  ∧ arguments+
+    lazy logic
+  or arguments+
+  ∨ arguments+
+  xor arguments+
+  & arguments+
+    non-lazy logic; all arguments are evaluated
+  | arguments+
+    non-lazy logic; all arguments are evaluated
+  x| arguments+
+    non-lazy logic; all arguments are evaluated
+  setbit number bit-number
+    number |= (0 << bit_number)    or something
+    setbit on a non-number is an error. It *MUST* be an error, otherwise is a security risk.
+    Maybe don't even have this?
+  getbit number bit-number
+    return !!(number & (0 << bit_number))
+    getbit on a non-number is an error.
+  ∀ universe proposition
+  ∃ universe proposition
+  ∃₁ universe proposition
+  ∃1 universe proposition
+  ∃! universe proposition
+    [universe [proposition-function universe-element]]
+
+STRING
+  "string" length
+  "string" is-empty
+  "string" has "search"
+  "search" in "string"
+  "string1" "string2" ... --> cat
+  "string1" "string2" ... join "delim"
+  "string" find "substring"
+  "string" index INDEX
+  "string" NUMBER --> index
+  "string" NUMBER NUMBER --> slice
+  "string" slice start end  #-inf and inf might be args
+  "string" hash
+  "string" split 'split'
+  "string" matches "startswith"
+  Also register equivalent string/FOO functions
+
+TYPES
+  type ATOM
+    returns the type of atom (as a token-symbol)
+  convert SRCATOM type/SYMBOL
+    returns the result of an attempted conversion
+
+
+OTHER FUNCTIONS
+  condense code
+    set 'code' to the evaluation of code. Do this until it is no longer executable. return value.
+  wait steps
+    Delay for steps. If we're using the default speed (or slower), it should cost nothing. Otherwise, it should still cost less. Like... cost_of_this_speed - cost_of_default_speed
+  random [upper-bound]
+    return a random h_NUMBER. If an upper-bound is given, it's between that number and 0.
+  <Doc-tag> comments*
+    No-op documentation. Doc-tag could be: NOTE, BUG, TODO, COMMENT, REM, XXX, FIXME, DOC, BTW, PSEUDO, URL, AUTHOR, DATE, CHANGE, LOG. Should be costless!
+  update code tokens+
+    create a copy of code. For each of it's node, check for arguments/functions that are in 'tokens'.
+    If a shared token name is found, replace the TOKEN atom with the evaluation of the TOKEN.
+    evaluate to the copy.
+    {do
+      [set test-function [print heyo]]
+      [set heyo "greetings!"]
+      [update test-function heyo]
+      [test-function]
+    } should print out "greetings!"
+    
+    [set function .arged.scope:{do
+      [set function-name [arg]]
+      [set function-body [arg]]
+      [set function-doc [arg]]
+      (if function-doc
+          [set function-template (document function-doc .arged.scope:function-body)]
+          #else
+          [set function-template .arged.scope:function-body]
+      )
+      [set function-template [update function-template function-doc function-body]]
+      [up-set [token function-name] function-template]
+    }]
+
+    Maybe it'd be better as (update code token value). (Take multiple args?)
+  quote value
+    Return value, without evaluating
+  catch-error to-evaluate
+    Evaluates to-evaluate function. If it gives an ERROR, return the ERROR's value. Otherwise, evaluate to NONE.
+
+
+ADMIN
+  There should be an ADMIN context.
+  internal:
+      load-module "filename"
+        Creates module object in library/FILENAME
+      unload-module library/NAME
+      print (to console)
+      module-set (sets a variable in a module)
+      include module
+      exclude module
+
+  module:
+    save "filename"
+    load "filename"
+    freeze
+      stops execution of non-console contexts
+    resume
+    unset-builtin-cache
+      goes through every context.command, and sets it to NULL.
+      Use before unloading modules and saving.
+    shutdown
+    exclusive-run code
+      steps through code without stopping, until it returns

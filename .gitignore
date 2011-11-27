@@ -1,0 +1,8 @@
+*~
+*.out
+*.o
+.redo
+.gdb_history
+.kdev4
+.kdev_include_paths
+*.kdev4

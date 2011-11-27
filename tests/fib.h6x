@@ -1,0 +1,59 @@
+
+
+[set fib quote.function:<i>:(if [= i 0] 0 [= i 1] 1 [+ fib:[- i 1] fib:[- i 2]])]
+[set tocalc quote:[fib 10]]
+[print `"`tocalc → `[tocalc]\n"]
+
+#*******************************************************************************************************************
+
+load-arg var-name var-name2 [quoted-var-name3]
+--> CODE new-scope
+
+Okay, so uh. load-arg creates a scope, evals up var-shit, and puts results into scope. Then passes scope to code.
+code would be...
+
+[scope-put scope code]
+  pushes scope, then evals code
+
+[set fib quote.set-arg.scope-put:[load-arg i]:{do
+  
+}]
+
+1. get-arg
+
+we want:
+  create a new scope
+  
+
+
+[include flow math]
+[set n 0]
+[set fib quote.set-arg.[load-arg eval i {do 
+  [set n [+ 1 n]]
+  [set is-end [any [= i 0] [= i 1]]]
+  (if is-end {flow/do [print `'RETURN `i\n'] [return i] [return 0]})
+  [print `"Fib `i `is-end\n"]
+  [return [+ fib:[- i 1] fib:[- i 2]]]
+}]]
+
+[include flow math]
+[set fib quote.function:<i>:{do
+  (if [any [= i 0] [= i 1]] [return i])
+  [return [+ fib:[- i 1] fib:[- i 2]]]
+}]
+
+
+[load eval value quote "quote" code]
+
+void h_load(Context &context) {
+  
+}
+
+
+[set wtf quote.set-arg.[load-arg eval i {flow/do 
+  [include math]
+  [print `"wtf: i = `i, i + 2 = `[math/+ i 2]\n"]
+  [wtf [math/+ i 2]]
+}]]
+
+*******************************************************************************************************************#
